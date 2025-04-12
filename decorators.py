@@ -21,7 +21,6 @@ def token_required(f):
             decoded_token = jwt.decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"], audience="authenticated")
             email = decoded_token.get('user_metadata').get('email')
             user_id = decoded_token.get('sub')
-            print(f"Token jest ważny. ID użytkownika: {email}")
             request.user = {
                 "email" : email,
                 "user_id" : user_id
