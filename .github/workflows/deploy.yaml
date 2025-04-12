@@ -1,0 +1,87 @@
+name: Deploy new application version
+
+on:
+  workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        env:
+            DEPLOYMENT_USER: deploy
+            DEPLOYMENT_SERVER: 18.201.217.41
+            AWS_SECURITY_GROUP: sg-072330fa287670c0d
+
+        steps:
+                    
+            - name: Get Github action IP
+              id: ip
+              uses: candidob/get-runner-ip@v1.0.0
+
+            - name: Add Github Actions IP to the security group
+              run: |
+                    aws ec2 authorize-security-group-ingress   \
+                        --group-id ${{ env.AWS_SECURITY_GROUP }} \
+                        --protocol tcp                           \
+                        --port 22                                \
+                        --cidr ${{ steps.ip.outputs.ipv4 }}/32
+              env:
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+            - name: Stop old container
+              uses: appleboy/ssh-action@v0.1.8
+              with:
+                host: ${{ env.DEPLOYMENT_SERVER }}
+                username: ${{ env.DEPLOYMENT_USER }}
+                key: ${{ secrets.SSH_KEY }}
+                script: |
+                    container_id=$(docker ps -q --filter "ancestor=kmaku4/hacathon-backend")
+                    if [ -n "$container_id" ]; then
+                      echo "Stopping container with ID: $container_id"
+                      docker stop $container_id
+                    else
+                      echo "No running container found for hacathon-backend"
+                    fi
+
+            - name: Login to docker registry
+              uses: appleboy/ssh-action@v0.1.8
+              with:
+                host: ${{ env.DEPLOYMENT_SERVER }}
+                username: ${{ env.DEPLOYMENT_USER }}
+                key: ${{ secrets.SSH_KEY }}
+                script: |
+                    echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+                    docker pull ${{ secrets.DOCKER_USERNAME }}/hacathon-backend:latest
+
+            - name: Run new image version
+              uses: appleboy/ssh-action@v0.1.8
+              with:
+                host: ${{ env.DEPLOYMENT_SERVER }}
+                username: ${{ env.DEPLOYMENT_USER }}
+                key: ${{ secrets.SSH_KEY }}
+                script: |
+                    docker run  \
+                    -d \
+                    -p 5000:5000 \
+                    -e DATABASE=${{ secrets.DATABASE }} \
+                    -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+                    -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+                    -e SUPABASE_KEY=${{ secrets.SUPABASE_KEY }} \
+                    -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+                    ${{ secrets.DOCKER_USERNAME }}/hacathon-backend:latest
+
+            - name: Remove Github Actions IP from the security group
+              if: always()
+              run: |
+                  aws ec2 revoke-security-group-ingress      \
+                    --group-id ${{ env.AWS_SECURITY_GROUP }} \
+                    --protocol tcp                           \
+                    --port 22                                \
+                    --cidr ${{ steps.ip.outputs.ipv4 }}/32
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+                    
