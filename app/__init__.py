@@ -24,6 +24,7 @@ def create_app():
     from app.routes.youtube_routes import youtube_bp
     from app.routes.prompt_routes import prompt_bp
     from app.routes.user_routes import user_bp
+    from app.routes.content_routes import content_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(twitter_bp)
@@ -31,5 +32,5 @@ def create_app():
     app.register_blueprint(youtube_bp)
     app.register_blueprint(prompt_bp)
     app.register_blueprint(user_bp)
-
+    app.register_blueprint(content_bp)
     return app
