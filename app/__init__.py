@@ -20,7 +20,9 @@ def create_app():
 
     from app.routes.auth_routes import auth_bp
     from app.routes.twitter_routes import twitter_bp
+    from app.routes.tiktok_routes import tiktok_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(twitter_bp)
+    app.register_blueprint(tiktok_bp)
 
     return app
