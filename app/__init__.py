@@ -11,8 +11,14 @@ def create_app():
 
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE')
-    CORS(app, supports_credentials=True)
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://18.201.217.4:3000",
+        "http://18.201.217.4:80"
+    ]
 
+    CORS(app, resources={r"/*": {"origins": allowed_origins}}, supports_credentials=True)
     db.init_app(app)
 
     with app.app_context():
