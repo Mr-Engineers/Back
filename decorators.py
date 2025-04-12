@@ -21,7 +21,7 @@ def token_required(f):
             decoded_token = jwt.decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"], audience="authenticated")
             user_id = decoded_token.get('sub')
             print(f"Token jest ważny. ID użytkownika: {user_id}")
-            kwargs['user_id'] = user_id
+            # kwargs['user_id'] = user_id
         except jwt.ExpiredSignatureError as e:
             print(f"Token wygasł: {e}")
             return jsonify({'message': 'Token has expired!'}), 401

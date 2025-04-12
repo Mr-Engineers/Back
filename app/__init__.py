@@ -19,6 +19,8 @@ def create_app():
         db.create_all()
 
     from app.routes.auth_routes import auth_bp
+    from app.routes.twitter_routes import twitter_bp
     app.register_blueprint(auth_bp)
+    app.register_blueprint(twitter_bp)
 
     return app

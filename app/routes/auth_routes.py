@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
 from app.services.auth_service import AuthService
-from app.utils.decorators import token_required
+from decorators import token_required
 
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
 
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.json
     response = auth_service.register_user(data['email'], data['password'])
@@ -16,7 +16,7 @@ def register():
         "user_id": response.user.id if response.user else None
     }), 200
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.json
     result = auth_service.login_user(data['email'], data['password'])
