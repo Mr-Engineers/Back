@@ -70,7 +70,8 @@ jobs:
                     -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
                     -e SUPABASE_KEY=${{ secrets.SUPABASE_KEY }} \
                     -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-                    ${{ secrets.DOCKER_USERNAME }}/hacathon-backend:latest
+                    -e MONGO_URI="${{ secrets.MONGO_URI }}" \
+                    kmaku4/hacathon-backend:latest
 
             - name: Remove Github Actions IP from the security group
               if: always()
