@@ -14,7 +14,7 @@ prompt_bp = Blueprint('prompt', __name__)
 @token_required
 def get_data():
     prompt_input = prompt_service.get_prompt_data(request.user["user_id"])
-    # hashtags = request.get_json()
+    hashtags = request.get_json()
 
     prompt = f"""
 You are a content strategist assistant. Based on the following business data, generate a content idea in JSON format with these fields:
@@ -30,6 +30,8 @@ You are a content strategist assistant. Based on the following business data, ge
 
 Here is the business data:
 {prompt_input}
+Select relevant hashtags
+{hashtags["hashtags"]}
 
 Return only the JSON object.
 """
