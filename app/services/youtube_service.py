@@ -2,6 +2,7 @@ from supabase import create_client, Client
 import os
 from pymongo import MongoClient
 from datetime import datetime, timedelta
+import random
 
 class YoutubeService:
     def __init__(self):
@@ -22,9 +23,15 @@ class YoutubeService:
             start_date = now - timedelta(days=1)
 
         query = {
-            "date": {"$gte": start_date}
+            "timestamp": {"$gte": start_date}
         }
 
-        documents = list(collection.find(query, {'_id': 0}))
+        documents = list(
+            collection.find(query, {'_id': 0})
+            .sort("rating", -1)
+            .limit(5)
+        )
+        for doc in documents:
+            doc["relevance"] = round(random.uniform(0.7, 1.0), 3)
 
         return documents

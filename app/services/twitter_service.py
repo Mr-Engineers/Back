@@ -27,18 +27,12 @@ class TwitterService:
             "date": {"$gte": start_date}
         }
 
-        documents = list(collection.find(query, {'_id': 0}))
-
-        grouped = defaultdict(lambda: {"post_count": 0})
-
+        documents = list(
+            collection.find(query, {'_id': 0})
+            .sort("post_count", -1)
+            .limit(5)
+        )
         for doc in documents:
-            key = doc.get("name")
-            post_count = doc.get("post_count")
-            if key and post_count is not None:
-                grouped[key]["post_count"] += post_count
-                grouped[key]["name"] = key
-        sorted_topics = sorted(grouped.values(), key=lambda x: x["post_count"], reverse=True)
-        for doc in sorted_topics:
             doc["relevance"] = round(random.uniform(0.7, 1.0), 3)
 
-        return sorted_topics[:5]
+        return documents

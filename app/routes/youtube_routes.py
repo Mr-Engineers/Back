@@ -13,8 +13,7 @@ def get_data():
     date_range = request.args.get('range', 'day')
     results = youtube_service.get_youtube_data(date_range)
 
-
     return jsonify({
-        "message": "User registered successfully",
+        "message": "Youtube data acquired",
         "data": results
     }), 200
