@@ -13,6 +13,6 @@ def get_data():
     results = tiktok_service.get_tiktok_data(date_range)
 
     return jsonify({
-        "message": "User registered successfully",
+        "message": "Tiktok data acquired",
         "data": results
     }), 200

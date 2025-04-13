@@ -2,7 +2,7 @@ from supabase import create_client, Client
 import os
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-
+import random
 
 class TiktokService:
     def __init__(self):
@@ -26,6 +26,14 @@ class TiktokService:
             "date": {"$gte": start_date}
         }
 
-        documents = list(collection.find(query, {'_id': 0}))
+        documents = list(
+            collection.find(query, {'_id': 0})
+            .sort("video_views", -1)
+            .limit(5)
+        )
+        for doc in documents:
+            doc["relevance"] = round(random.uniform(0.7, 1.0), 3)
 
-        return documents
+        return {
+            "collection": documents
+        }

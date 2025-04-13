@@ -30,7 +30,6 @@ class UserService:
 
     def update_user(self, user_id: str, data: dict):
         profile_update = {
-            "name": data.get("name"),
             "email": data.get("email")
         }
         self.client.table("profiles").update(profile_update).eq("id", user_id).execute()
