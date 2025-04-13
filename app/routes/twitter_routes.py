@@ -14,6 +14,6 @@ def get_data():
 
 
     return jsonify({
-        "message": "User registered successfully",
+        "message": "Twitter data acquired",
         "data": results
     }), 200
