@@ -11,6 +11,7 @@ class ContentService:
         response = self.client.table("contents") \
             .select("*, tags(*)") \
             .eq("user_id", user_id) \
+            .eq("is_saved", True) \
             .execute()
 
         if not response.data:
