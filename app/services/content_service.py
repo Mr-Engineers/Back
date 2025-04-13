@@ -41,3 +41,15 @@ class ContentService:
             }).execute()
 
         return {"message": "User updated successfully"}
+
+    def update_content(self, user_id: str, data: dict):
+
+        response = self.client.table("contents").update({
+            "is_saved": data.get("is_saved"),
+        }).eq("id", data["id"]).execute()
+
+        if not response.data or len(response.data) == 0:
+            return {"error": "Content creation failed"}
+
+
+        return {"message": "User updated successfully"}

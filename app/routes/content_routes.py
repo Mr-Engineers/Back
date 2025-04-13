@@ -28,3 +28,16 @@ def add_content():
         "Success": "Successfully added content",
 
     }), 200
+
+@content_bp.route('/api/content', methods=['PUT'])
+@token_required
+def update_content():
+    user_id = request.user["user_id"]
+    data = request.get_json()
+
+    content = content_service.update_content(user_id, data)
+
+    return jsonify({
+        "Success": "Successfully added content",
+
+    }), 200
