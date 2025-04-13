@@ -49,7 +49,7 @@ def get_prompt_content():
           "platform": "one of: {', '.join(VALID_PLATFORMS)}",
           "contentType": "one of: {', '.join(VALID_CONTENT_TYPES)}",
           "relevance": numeric between 0 and 100,
-          "hashtags": ["#tag1", "#tag2"]
+          "hashtags": "a few of {', '.join(hashtags)}"
         }}
 
         Here is the business data:
