@@ -11,25 +11,15 @@ prompt_service = PromptService(auth_service.client)
 prompt_bp = Blueprint('prompt', __name__)
 
 VALID_PLATFORMS = [
-    "twitter",
-    "youtube",
-    "tiktok"
+    "Twitter",
+    "Youtube",
+    "TikTok"
 ]
 
 VALID_CONTENT_TYPES = [
-    "short video",
-    "image post",
-    "text post",
-    "infographic",
-    "live stream",
-    "story",
-    "poll",
-    "thread",
-    "tutorial",
-    "meme",
-    "review",
-    "vlog",
-    "how-to guide"
+    "Short video",
+    "Long video",
+    "Article",
 ]
 
 SYSTEM_MESSAGE = {
@@ -37,7 +27,7 @@ SYSTEM_MESSAGE = {
     "content": "You are a helpful assistant that only returns JSON."
 }
 
-@prompt_bp.route('/api/prompt', methods=['GET'])
+@prompt_bp.route('/api/prompt', methods=['POST'])
 @token_required
 def get_prompt_content():
     try:
@@ -81,6 +71,27 @@ def get_prompt_content():
 
         try:
             parsed_json = json.loads(content)
+            print(parsed_json)
+            response = prompt_service.client.table("contents").insert({
+                "title": parsed_json.get("title"),
+                "user_id": user_id,
+                "description": parsed_json.get("description"),
+                "relevance": parsed_json.get("relevance"),
+                "platform": parsed_json.get("platform"),
+                "type": parsed_json.get("contentType"),
+            }).execute()
+
+            content_id = response.data[0]["id"]
+
+            for tag in parsed_json.get("hashtags"):
+                prompt_service.client.table("tags").insert({
+                    "name": tag,
+                    "content_id": content_id,
+                }).execute()
+
+            if not response.data or len(response.data) == 0:
+                return {"error": "Content creation failed"}
+
         except json.JSONDecodeError:
             return jsonify({"error": "Invalid JSON returned from OpenAI.", "raw": content}), 500
 

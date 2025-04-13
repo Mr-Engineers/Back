@@ -16,7 +16,7 @@ class PromptService:
         business_description = description_result.data[0]["business_description"] if description_result.data else None
         content_goals = [item["goal_id"] for item in goals_result.data] if goals_result.data else []
 
-        # Return a flat and clear structure
+
         return {
             "industry": industry,
             "business_description": business_description,
