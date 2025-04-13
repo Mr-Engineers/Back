@@ -95,7 +95,7 @@ def get_prompt_content():
         except json.JSONDecodeError:
             return jsonify({"error": "Invalid JSON returned from OpenAI.", "raw": content}), 500
 
-        return jsonify({"data": parsed_json}), 200
+        return jsonify({"data": parsed_json, "id": content_id}), 200
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
